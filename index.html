@@ -3,25 +3,28 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>نظام المبيعات</title>
+<title>تطبيق المبيعات</title>
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
 
 <style>
 body{
   margin:0;
   font-family: Arial;
-  background:#f0f2f5;
+  background:#eef2f7;
 }
 
-/* شريط علوي */
-.header{
-  background:#1e88e5;
+/* Header */
+header{
+  background:#1976d2;
   color:white;
   padding:15px;
   text-align:center;
   font-size:20px;
 }
 
-/* كروت */
+/* Card */
 .card{
   background:white;
   margin:10px;
@@ -30,7 +33,7 @@ body{
   box-shadow:0 2px 8px rgba(0,0,0,0.1);
 }
 
-/* input */
+/* Inputs */
 input, select{
   width:100%;
   padding:12px;
@@ -39,19 +42,18 @@ input, select{
   border:1px solid #ccc;
 }
 
-/* زرار */
+/* Button */
 button{
   width:100%;
   padding:12px;
-  margin-top:10px;
-  background:#1e88e5;
+  background:#1976d2;
   color:white;
   border:none;
   border-radius:10px;
   font-size:16px;
 }
 
-/* جدول */
+/* Table */
 table{
   width:100%;
   border-collapse:collapse;
@@ -63,9 +65,9 @@ td,th{
   border-bottom:1px solid #ddd;
 }
 
-/* إجمالي */
+/* Total */
 .total{
-  font-size:18px;
+  font-size:20px;
   font-weight:bold;
   text-align:center;
   margin-top:10px;
@@ -75,10 +77,10 @@ td,th{
 
 <body>
 
-<div class="header">📊 نظام المبيعات</div>
+<header>📱 تطبيق المبيعات</header>
 
 <div class="card">
-<h3>👤 اسم العميل</h3>
+<h3>👤 العميل</h3>
 <input id="customer" placeholder="اسم العميل">
 </div>
 
@@ -94,7 +96,7 @@ td,th{
 <option>كرتونة</option>
 </select>
 
-<button onclick="addSale()">إضافة</button>
+<button onclick="add()">إضافة</button>
 </div>
 
 <div class="card">
@@ -109,7 +111,8 @@ td,th{
 <th>إجمالي</th>
 </tr>
 </thead>
-<tbody id="sales"></tbody>
+
+<tbody id="list"></tbody>
 </table>
 
 <div class="total">الإجمالي: <span id="total">0</span> جنيه</div>
@@ -117,37 +120,37 @@ td,th{
 
 <script>
 
-let sales=[];
+let data=[];
 
-function addSale(){
+function add(){
   let item=document.getElementById("item").value;
   let qty=Number(document.getElementById("qty").value);
   let price=Number(document.getElementById("price").value);
 
   let total=qty*price;
 
-  sales.push({item,qty,price,total});
+  data.push({item,qty,price,total});
   show();
 }
 
 function show(){
-  let table=document.getElementById("sales");
-  let totalAll=0;
+  let table=document.getElementById("list");
+  let sum=0;
   table.innerHTML="";
 
-  sales.forEach(s=>{
+  data.forEach(d=>{
     table.innerHTML+=`
       <tr>
-        <td>${s.item}</td>
-        <td>${s.qty}</td>
-        <td>${s.price}</td>
-        <td>${s.total}</td>
+        <td>${d.item}</td>
+        <td>${d.qty}</td>
+        <td>${d.price}</td>
+        <td>${d.total}</td>
       </tr>
     `;
-    totalAll+=s.total;
+    sum+=d.total;
   });
 
-  document.getElementById("total").innerText=totalAll;
+  document.getElementById("total").innerText=sum;
 }
 
 </script>
