@@ -4,10 +4,10 @@
   <meta charset="UTF-8">
   <title>برنامج المبيعات</title>
   <style>
-    body { font-family: Arial; background:#f4f4f4; padding:20px; }
+    body { font-family: Arial; background:#f2f2f2; padding:20px; }
     .box { background:white; padding:15px; margin-bottom:10px; border-radius:10px; }
     input, button { padding:10px; margin:5px; }
-    table { width:100%; background:white; border-collapse:collapse; }
+    table { width:100%; border-collapse:collapse; background:white; }
     th, td { border:1px solid #ddd; padding:8px; text-align:center; }
   </style>
 </head>
@@ -28,9 +28,9 @@
   <table>
     <thead>
       <tr>
-        <th>المنتج</th>
+        <th>الاسم</th>
         <th>السعر</th>
-        <th>إضافة فاتورة</th>
+        <th>إضافة</th>
       </tr>
     </thead>
     <tbody id="products"></tbody>
@@ -41,10 +41,12 @@
   <h3>الفاتورة</h3>
   <ul id="bill"></ul>
   <h3>الإجمالي: <span id="total">0</span> جنيه</h3>
+  <button onclick="saveInvoice()">💾 حفظ الفاتورة</button>
+  <button onclick="printInvoice()">🧾 طباعة</button>
 </div>
 
 <script>
-let products = [];
+let products = JSON.parse(localStorage.getItem("products")) || [];
 let bill = [];
 
 function addProduct(){
@@ -52,6 +54,8 @@ function addProduct(){
   let price = Number(document.getElementById("price").value);
 
   products.push({name, price});
+  localStorage.setItem("products", JSON.stringify(products));
+
   showProducts();
 }
 
@@ -59,7 +63,7 @@ function showProducts(){
   let table = document.getElementById("products");
   table.innerHTML = "";
 
-  products.forEach((p, i)=>{
+  products.forEach((p,i)=>{
     table.innerHTML += `
       <tr>
         <td>${p.name}</td>
@@ -87,6 +91,17 @@ function showBill(){
 
   document.getElementById("total").innerText = total;
 }
+
+function saveInvoice(){
+  localStorage.setItem("lastInvoice", JSON.stringify(bill));
+  alert("تم حفظ الفاتورة ✔");
+}
+
+function printInvoice(){
+  window.print();
+}
+
+showProducts();
 </script>
 
 </body>
