@@ -2,31 +2,87 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>نظام مبيعات ومشتريات</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>نظام المبيعات</title>
 
 <style>
-body {font-family: Arial; background:#f2f2f2; padding:20px;}
-.box {background:white; padding:15px; margin-bottom:10px; border-radius:10px;}
-input, select, button {padding:10px; margin:5px;}
-table {width:100%; border-collapse:collapse; background:white;}
-th, td {border:1px solid #ddd; padding:8px; text-align:center;}
-.total {font-size:20px; font-weight:bold;}
-</style>
+body{
+  margin:0;
+  font-family: Arial;
+  background:#f0f2f5;
+}
 
+/* شريط علوي */
+.header{
+  background:#1e88e5;
+  color:white;
+  padding:15px;
+  text-align:center;
+  font-size:20px;
+}
+
+/* كروت */
+.card{
+  background:white;
+  margin:10px;
+  padding:15px;
+  border-radius:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* input */
+input, select{
+  width:100%;
+  padding:12px;
+  margin:5px 0;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+
+/* زرار */
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#1e88e5;
+  color:white;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+}
+
+/* جدول */
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+td,th{
+  padding:10px;
+  text-align:center;
+  border-bottom:1px solid #ddd;
+}
+
+/* إجمالي */
+.total{
+  font-size:18px;
+  font-weight:bold;
+  text-align:center;
+  margin-top:10px;
+}
+</style>
 </head>
 
 <body>
 
-<h2>📊 نظام المبيعات والمشتريات</h2>
+<div class="header">📊 نظام المبيعات</div>
 
-<!-- بيانات العميل -->
-<div class="box">
-<h3>👤 بيانات البيع</h3>
+<div class="card">
+<h3>👤 اسم العميل</h3>
 <input id="customer" placeholder="اسم العميل">
 </div>
 
-<!-- إضافة صنف -->
-<div class="box">
+<div class="card">
 <h3>➕ إضافة صنف</h3>
 
 <input id="item" placeholder="اسم الصنف">
@@ -34,109 +90,64 @@ th, td {border:1px solid #ddd; padding:8px; text-align:center;}
 <input id="price" placeholder="السعر">
 
 <select id="type">
-  <option value="قطعة">قطعة</option>
-  <option value="كرتونة">كرتونة</option>
+<option>قطعة</option>
+<option>كرتونة</option>
 </select>
 
 <button onclick="addSale()">إضافة</button>
 </div>
 
-<!-- جدول المبيعات -->
-<div class="box">
+<div class="card">
 <h3>🧾 الفاتورة</h3>
 
 <table>
 <thead>
 <tr>
 <th>الصنف</th>
-<th>العدد</th>
-<th>السعر</th>
-<th>النوع</th>
-<th>الإجمالي</th>
+<th>عدد</th>
+<th>سعر</th>
+<th>إجمالي</th>
 </tr>
 </thead>
-
 <tbody id="sales"></tbody>
 </table>
 
-<p class="total">الإجمالي الكلي: <span id="total">0</span> جنيه</p>
-</div>
-
-<!-- المشتريات -->
-<div class="box">
-<h3>🛒 المشتريات (نفس النظام)</h3>
-
-<input id="bitem" placeholder="الصنف">
-<input id="bqty" placeholder="العدد">
-<input id="bprice" placeholder="السعر">
-
-<select id="btype">
-  <option value="قطعة">قطعة</option>
-  <option value="كرتونة">كرتونة</option>
-</select>
-
-<button onclick="addBuy()">إضافة مشتريات</button>
-
-<ul id="buyList"></ul>
+<div class="total">الإجمالي: <span id="total">0</span> جنيه</div>
 </div>
 
 <script>
 
-let sales = [];
-let buys = [];
+let sales=[];
 
 function addSale(){
-  let item = document.getElementById("item").value;
-  let qty = Number(document.getElementById("qty").value);
-  let price = Number(document.getElementById("price").value);
-  let type = document.getElementById("type").value;
+  let item=document.getElementById("item").value;
+  let qty=Number(document.getElementById("qty").value);
+  let price=Number(document.getElementById("price").value);
 
-  let total = qty * price;
+  let total=qty*price;
 
-  sales.push({item, qty, price, type, total});
-  showSales();
+  sales.push({item,qty,price,total});
+  show();
 }
 
-function showSales(){
-  let table = document.getElementById("sales");
-  let totalAll = 0;
-  table.innerHTML = "";
+function show(){
+  let table=document.getElementById("sales");
+  let totalAll=0;
+  table.innerHTML="";
 
   sales.forEach(s=>{
-    table.innerHTML += `
+    table.innerHTML+=`
       <tr>
         <td>${s.item}</td>
         <td>${s.qty}</td>
         <td>${s.price}</td>
-        <td>${s.type}</td>
         <td>${s.total}</td>
       </tr>
     `;
-    totalAll += s.total;
+    totalAll+=s.total;
   });
 
-  document.getElementById("total").innerText = totalAll;
-}
-
-function addBuy(){
-  let item = document.getElementById("bitem").value;
-  let qty = Number(document.getElementById("bqty").value);
-  let price = Number(document.getElementById("bprice").value);
-  let type = document.getElementById("btype").value;
-
-  let total = qty * price;
-
-  buys.push({item, qty, price, type, total});
-  showBuys();
-}
-
-function showBuys(){
-  let list = document.getElementById("buyList");
-  list.innerHTML = "";
-
-  buys.forEach(b=>{
-    list.innerHTML += `<li>${b.item} - ${b.qty} - ${b.price} - ${b.type} - ${b.total}</li>`;
-  });
+  document.getElementById("total").innerText=totalAll;
 }
 
 </script>
