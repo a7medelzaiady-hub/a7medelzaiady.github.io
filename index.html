@@ -2,154 +2,142 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>برنامج مبيعات حقيقي</title>
+<title>نظام مبيعات ومشتريات</title>
 
 <style>
 body {font-family: Arial; background:#f2f2f2; padding:20px;}
 .box {background:white; padding:15px; margin-bottom:10px; border-radius:10px;}
-input, button {padding:10px; margin:5px;}
+input, select, button {padding:10px; margin:5px;}
 table {width:100%; border-collapse:collapse; background:white;}
 th, td {border:1px solid #ddd; padding:8px; text-align:center;}
 .total {font-size:20px; font-weight:bold;}
 </style>
+
 </head>
 
 <body>
 
-<h2>📊 برنامج مبيعات حقيقي</h2>
+<h2>📊 نظام المبيعات والمشتريات</h2>
 
-<!-- منتجات -->
+<!-- بيانات العميل -->
 <div class="box">
-<h3>➕ إضافة منتج</h3>
-<input id="pname" placeholder="اسم المنتج">
-<input id="pprice" placeholder="السعر">
-<button onclick="addProduct()">إضافة</button>
+<h3>👤 بيانات البيع</h3>
+<input id="customer" placeholder="اسم العميل">
 </div>
 
-<!-- جدول المنتجات -->
+<!-- إضافة صنف -->
 <div class="box">
-<h3>📦 المنتجات</h3>
+<h3>➕ إضافة صنف</h3>
+
+<input id="item" placeholder="اسم الصنف">
+<input id="qty" placeholder="العدد">
+<input id="price" placeholder="السعر">
+
+<select id="type">
+  <option value="قطعة">قطعة</option>
+  <option value="كرتونة">كرتونة</option>
+</select>
+
+<button onclick="addSale()">إضافة</button>
+</div>
+
+<!-- جدول المبيعات -->
+<div class="box">
+<h3>🧾 الفاتورة</h3>
+
 <table>
 <thead>
 <tr>
-<th>الاسم</th>
+<th>الصنف</th>
+<th>العدد</th>
 <th>السعر</th>
-<th>إضافة</th>
+<th>النوع</th>
+<th>الإجمالي</th>
 </tr>
 </thead>
-<tbody id="products"></tbody>
+
+<tbody id="sales"></tbody>
 </table>
+
+<p class="total">الإجمالي الكلي: <span id="total">0</span> جنيه</p>
 </div>
 
-<!-- الفاتورة -->
+<!-- المشتريات -->
 <div class="box">
-<h3>🧾 فاتورة جديدة</h3>
-<ul id="bill"></ul>
+<h3>🛒 المشتريات (نفس النظام)</h3>
 
-<p class="total">الإجمالي: <span id="total">0</span></p>
+<input id="bitem" placeholder="الصنف">
+<input id="bqty" placeholder="العدد">
+<input id="bprice" placeholder="السعر">
 
-<button onclick="saveBill()">💾 حفظ الفاتورة</button>
-<button onclick="clearBill()">🗑 مسح</button>
-</div>
+<select id="btype">
+  <option value="قطعة">قطعة</option>
+  <option value="كرتونة">كرتونة</option>
+</select>
 
-<!-- سجل الفواتير -->
-<div class="box">
-<h3>📚 سجل الفواتير</h3>
-<ul id="history"></ul>
+<button onclick="addBuy()">إضافة مشتريات</button>
+
+<ul id="buyList"></ul>
 </div>
 
 <script>
 
-let products = JSON.parse(localStorage.getItem("products")) || [];
-let bills = JSON.parse(localStorage.getItem("bills")) || [];
-let bill = [];
+let sales = [];
+let buys = [];
 
-function addProduct(){
-  let name = document.getElementById("pname").value;
-  let price = Number(document.getElementById("pprice").value);
+function addSale(){
+  let item = document.getElementById("item").value;
+  let qty = Number(document.getElementById("qty").value);
+  let price = Number(document.getElementById("price").value);
+  let type = document.getElementById("type").value;
 
-  products.push({name, price});
-  localStorage.setItem("products", JSON.stringify(products));
+  let total = qty * price;
 
-  showProducts();
+  sales.push({item, qty, price, type, total});
+  showSales();
 }
 
-function showProducts(){
-  let table = document.getElementById("products");
+function showSales(){
+  let table = document.getElementById("sales");
+  let totalAll = 0;
   table.innerHTML = "";
 
-  products.forEach((p,i)=>{
+  sales.forEach(s=>{
     table.innerHTML += `
       <tr>
-        <td>${p.name}</td>
-        <td>${p.price}</td>
-        <td><button onclick="addToBill(${i})">➕</button></td>
+        <td>${s.item}</td>
+        <td>${s.qty}</td>
+        <td>${s.price}</td>
+        <td>${s.type}</td>
+        <td>${s.total}</td>
       </tr>
     `;
+    totalAll += s.total;
   });
+
+  document.getElementById("total").innerText = totalAll;
 }
 
-function addToBill(i){
-  bill.push(products[i]);
-  showBill();
+function addBuy(){
+  let item = document.getElementById("bitem").value;
+  let qty = Number(document.getElementById("bqty").value);
+  let price = Number(document.getElementById("bprice").value);
+  let type = document.getElementById("btype").value;
+
+  let total = qty * price;
+
+  buys.push({item, qty, price, type, total});
+  showBuys();
 }
 
-function showBill(){
-  let list = document.getElementById("bill");
-  let total = 0;
+function showBuys(){
+  let list = document.getElementById("buyList");
   list.innerHTML = "";
 
-  bill.forEach((p,i)=>{
-    list.innerHTML += `
-      <li>${p.name} - ${p.price}
-      <button onclick="removeItem(${i})">❌</button></li>
-    `;
-    total += p.price;
-  });
-
-  document.getElementById("total").innerText = total;
-}
-
-function removeItem(i){
-  bill.splice(i,1);
-  showBill();
-}
-
-function clearBill(){
-  bill = [];
-  showBill();
-}
-
-function saveBill(){
-  if(bill.length === 0){ alert("الفاتورة فاضية"); return; }
-
-  let total = bill.reduce((sum,p)=>sum+p.price,0);
-
-  bills.push({
-    date: new Date().toLocaleString(),
-    items: bill,
-    total: total
-  });
-
-  localStorage.setItem("bills", JSON.stringify(bills));
-  bill = [];
-  showBill();
-  showHistory();
-
-  alert("تم حفظ الفاتورة ✔");
-}
-
-function showHistory(){
-  let list = document.getElementById("history");
-  list.innerHTML = "";
-
-  bills.forEach(b=>{
-    list.innerHTML += `<li>${b.date} - ${b.total} جنيه</li>`;
+  buys.forEach(b=>{
+    list.innerHTML += `<li>${b.item} - ${b.qty} - ${b.price} - ${b.type} - ${b.total}</li>`;
   });
 }
-
-showProducts();
-showHistory();
 
 </script>
 
