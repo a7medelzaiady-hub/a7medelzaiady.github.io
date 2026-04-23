@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+<meta charset="UTF-8">
+<title>برنامج مبيعات</title>
+<style>
+body { font-family: Arial; text-align: center; }
+input, button { padding:10px; margin:5px; }
+</style>
+</head>
+
+<body>
+
+<h2>برنامج مبيعات بسيط</h2>
+
+<input id="price" placeholder="السعر"><br>
+<input id="qty" placeholder="الكمية"><br>
+
+<button onclick="calc()">احسب</button>
+
+<h3 id="total">الإجمالي: 0</h3>
+
+<script>
+function calc(){
+  var price = document.getElementById("price").value;
+  var qty = document.getElementById("qty").value;
+  var total = price * qty;
+  document.getElementById("total").innerText = "الإجمالي: " + total;
+}
+</script>
+
+</body>
+</html>
