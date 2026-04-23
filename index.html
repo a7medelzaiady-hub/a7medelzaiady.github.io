@@ -1,51 +1,62 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="UTF-8">
-  <title>برنامج المبيعات</title>
-  <style>
-    body { font-family: Arial; background:#f2f2f2; padding:20px; }
-    .box { background:white; padding:15px; margin-bottom:10px; border-radius:10px; }
-    input, button { padding:10px; margin:5px; }
-    table { width:100%; border-collapse:collapse; background:white; }
-    th, td { border:1px solid #ddd; padding:8px; text-align:center; }
-  </style>
+<meta charset="UTF-8">
+<title>نظام مبيعات كامل</title>
+
+<style>
+body {font-family: Arial; background:#f4f4f4; margin:0; padding:20px;}
+h2 {text-align:center;}
+.box {background:white; padding:15px; margin:10px 0; border-radius:10px;}
+input, button {padding:10px; margin:5px;}
+table {width:100%; border-collapse:collapse; background:white;}
+th, td {border:1px solid #ddd; padding:10px; text-align:center;}
+button {cursor:pointer;}
+.total {font-size:20px; font-weight:bold;}
+</style>
+
 </head>
 
 <body>
 
-<h2>📊 برنامج المبيعات</h2>
+<h2>📊 نظام المبيعات الكامل</h2>
 
+<!-- إضافة منتج -->
 <div class="box">
-  <h3>إضافة منتج</h3>
-  <input id="name" placeholder="اسم المنتج">
-  <input id="price" placeholder="السعر">
-  <button onclick="addProduct()">إضافة</button>
+<h3>➕ إضافة منتج</h3>
+<input id="name" placeholder="اسم المنتج">
+<input id="price" placeholder="السعر">
+<button onclick="addProduct()">إضافة</button>
 </div>
 
+<!-- المنتجات -->
 <div class="box">
-  <h3>المنتجات</h3>
-  <table>
-    <thead>
-      <tr>
-        <th>الاسم</th>
-        <th>السعر</th>
-        <th>إضافة</th>
-      </tr>
-    </thead>
-    <tbody id="products"></tbody>
-  </table>
+<h3>📦 المنتجات</h3>
+<table>
+<thead>
+<tr>
+<th>الاسم</th>
+<th>السعر</th>
+<th>إضافة</th>
+</tr>
+</thead>
+<tbody id="products"></tbody>
+</table>
 </div>
 
+<!-- الفاتورة -->
 <div class="box">
-  <h3>الفاتورة</h3>
-  <ul id="bill"></ul>
-  <h3>الإجمالي: <span id="total">0</span> جنيه</h3>
-  <button onclick="saveInvoice()">💾 حفظ الفاتورة</button>
-  <button onclick="printInvoice()">🧾 طباعة</button>
+<h3>🧾 الفاتورة</h3>
+<ul id="bill"></ul>
+
+<p class="total">الإجمالي: <span id="total">0</span> جنيه</p>
+
+<button onclick="clearBill()">🗑 مسح الفاتورة</button>
+<button onclick="printBill()">🖨 طباعة</button>
 </div>
 
 <script>
+
 let products = JSON.parse(localStorage.getItem("products")) || [];
 let bill = [];
 
@@ -53,9 +64,10 @@ function addProduct(){
   let name = document.getElementById("name").value;
   let price = Number(document.getElementById("price").value);
 
+  if(!name || !price){ alert("اكتب بيانات صحيحة"); return; }
+
   products.push({name, price});
   localStorage.setItem("products", JSON.stringify(products));
-
   showProducts();
 }
 
@@ -68,7 +80,7 @@ function showProducts(){
       <tr>
         <td>${p.name}</td>
         <td>${p.price}</td>
-        <td><button onclick="addToBill(${i})">+</button></td>
+        <td><button onclick="addToBill(${i})">➕</button></td>
       </tr>
     `;
   });
@@ -84,24 +96,35 @@ function showBill(){
   let total = 0;
   list.innerHTML = "";
 
-  bill.forEach(p=>{
-    list.innerHTML += `<li>${p.name} - ${p.price}</li>`;
+  bill.forEach((p, i)=>{
+    list.innerHTML += `
+      <li>
+        ${p.name} - ${p.price}
+        <button onclick="removeItem(${i})">❌</button>
+      </li>
+    `;
     total += p.price;
   });
 
   document.getElementById("total").innerText = total;
 }
 
-function saveInvoice(){
-  localStorage.setItem("lastInvoice", JSON.stringify(bill));
-  alert("تم حفظ الفاتورة ✔");
+function removeItem(i){
+  bill.splice(i,1);
+  showBill();
 }
 
-function printInvoice(){
+function clearBill(){
+  bill = [];
+  showBill();
+}
+
+function printBill(){
   window.print();
 }
 
 showProducts();
+
 </script>
 
 </body>
