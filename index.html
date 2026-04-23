@@ -9,14 +9,14 @@
 body{
   margin:0;
   font-family: Arial;
-  background:#f0f2f5;
+  background:#eef2f7;
 }
 
 /* Login */
-.login-box{
+.login{
   width:90%;
   max-width:350px;
-  margin:100px auto;
+  margin:120px auto;
   background:white;
   padding:20px;
   border-radius:15px;
@@ -27,7 +27,7 @@ body{
 input{
   width:100%;
   padding:12px;
-  margin:10px 0;
+  margin:8px 0;
   border-radius:10px;
   border:1px solid #ccc;
 }
@@ -60,28 +60,78 @@ header{
   margin:10px;
   padding:15px;
   border-radius:15px;
+  box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+td,th{
+  padding:10px;
+  text-align:center;
+  border-bottom:1px solid #ddd;
+}
+
+.total{
+  font-size:20px;
+  font-weight:bold;
+  text-align:center;
+  margin-top:10px;
 }
 </style>
 </head>
 
 <body>
 
-<!-- تسجيل الدخول -->
-<div class="login-box" id="login">
-  <h2>🔐 تسجيل الدخول</h2>
-  <input id="user" placeholder="اسم المستخدم">
-  <input id="pass" type="password" placeholder="كلمة السر">
-  <button onclick="login()">دخول</button>
+<!-- شاشة الدخول -->
+<div class="login" id="login">
+<h2>🔐 تسجيل الدخول</h2>
+
+<input id="user" placeholder="اسم المستخدم">
+<input id="pass" type="password" placeholder="كلمة المرور">
+
+<button onclick="login()">دخول</button>
 </div>
 
-<!-- التطبيق -->
+<!-- البرنامج -->
 <div id="app">
 
-<header>📱 نظام المبيعات</header>
+<header>📊 برنامج المبيعات</header>
 
 <div class="card">
-<h3>مرحباً 👋</h3>
-<p>تم تسجيل الدخول بنجاح</p>
+<h3>👤 اسم العميل</h3>
+<input id="customer" placeholder="اسم العميل">
+</div>
+
+<div class="card">
+<h3>➕ إضافة صنف</h3>
+
+<input id="item" placeholder="اسم الصنف">
+<input id="qty" placeholder="العدد">
+<input id="price" placeholder="السعر">
+
+<button onclick="add()">إضافة</button>
+</div>
+
+<div class="card">
+<h3>🧾 الفاتورة</h3>
+
+<table>
+<thead>
+<tr>
+<th>الصنف</th>
+<th>عدد</th>
+<th>سعر</th>
+<th>إجمالي</th>
+</tr>
+</thead>
+
+<tbody id="list"></tbody>
+</table>
+
+<div class="total">الإجمالي: <span id="total">0</span></div>
 </div>
 
 </div>
@@ -89,16 +139,48 @@ header{
 <script>
 
 function login(){
-  let user=document.getElementById("user").value;
-  let pass=document.getElementById("pass").value;
+  let u=document.getElementById("user").value;
+  let p=document.getElementById("pass").value;
 
-  // بيانات الدخول
-  if(user=="admin" && pass=="1234"){
+  if(u=="admin" && p=="1234"){
     document.getElementById("login").style.display="none";
     document.getElementById("app").style.display="block";
   }else{
     alert("❌ بيانات غير صحيحة");
   }
+}
+
+let data=[];
+
+function add(){
+  let item=document.getElementById("item").value;
+  let qty=Number(document.getElementById("qty").value);
+  let price=Number(document.getElementById("price").value);
+
+  let total=qty*price;
+
+  data.push({item,qty,price,total});
+  show();
+}
+
+function show(){
+  let table=document.getElementById("list");
+  let sum=0;
+  table.innerHTML="";
+
+  data.forEach(d=>{
+    table.innerHTML+=`
+      <tr>
+        <td>${d.item}</td>
+        <td>${d.qty}</td>
+        <td>${d.price}</td>
+        <td>${d.total}</td>
+      </tr>
+    `;
+    sum+=d.total;
+  });
+
+  document.getElementById("total").innerText=sum;
 }
 
 </script>
