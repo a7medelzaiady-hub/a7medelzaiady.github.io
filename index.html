@@ -2,34 +2,31 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>نظام مبيعات كامل</title>
+<title>برنامج مبيعات حقيقي</title>
 
 <style>
-body {font-family: Arial; background:#f4f4f4; margin:0; padding:20px;}
-h2 {text-align:center;}
-.box {background:white; padding:15px; margin:10px 0; border-radius:10px;}
+body {font-family: Arial; background:#f2f2f2; padding:20px;}
+.box {background:white; padding:15px; margin-bottom:10px; border-radius:10px;}
 input, button {padding:10px; margin:5px;}
 table {width:100%; border-collapse:collapse; background:white;}
-th, td {border:1px solid #ddd; padding:10px; text-align:center;}
-button {cursor:pointer;}
+th, td {border:1px solid #ddd; padding:8px; text-align:center;}
 .total {font-size:20px; font-weight:bold;}
 </style>
-
 </head>
 
 <body>
 
-<h2>📊 نظام المبيعات الكامل</h2>
+<h2>📊 برنامج مبيعات حقيقي</h2>
 
-<!-- إضافة منتج -->
+<!-- منتجات -->
 <div class="box">
 <h3>➕ إضافة منتج</h3>
-<input id="name" placeholder="اسم المنتج">
-<input id="price" placeholder="السعر">
+<input id="pname" placeholder="اسم المنتج">
+<input id="pprice" placeholder="السعر">
 <button onclick="addProduct()">إضافة</button>
 </div>
 
-<!-- المنتجات -->
+<!-- جدول المنتجات -->
 <div class="box">
 <h3>📦 المنتجات</h3>
 <table>
@@ -46,28 +43,34 @@ button {cursor:pointer;}
 
 <!-- الفاتورة -->
 <div class="box">
-<h3>🧾 الفاتورة</h3>
+<h3>🧾 فاتورة جديدة</h3>
 <ul id="bill"></ul>
 
-<p class="total">الإجمالي: <span id="total">0</span> جنيه</p>
+<p class="total">الإجمالي: <span id="total">0</span></p>
 
-<button onclick="clearBill()">🗑 مسح الفاتورة</button>
-<button onclick="printBill()">🖨 طباعة</button>
+<button onclick="saveBill()">💾 حفظ الفاتورة</button>
+<button onclick="clearBill()">🗑 مسح</button>
+</div>
+
+<!-- سجل الفواتير -->
+<div class="box">
+<h3>📚 سجل الفواتير</h3>
+<ul id="history"></ul>
 </div>
 
 <script>
 
 let products = JSON.parse(localStorage.getItem("products")) || [];
+let bills = JSON.parse(localStorage.getItem("bills")) || [];
 let bill = [];
 
 function addProduct(){
-  let name = document.getElementById("name").value;
-  let price = Number(document.getElementById("price").value);
-
-  if(!name || !price){ alert("اكتب بيانات صحيحة"); return; }
+  let name = document.getElementById("pname").value;
+  let price = Number(document.getElementById("pprice").value);
 
   products.push({name, price});
   localStorage.setItem("products", JSON.stringify(products));
+
   showProducts();
 }
 
@@ -96,12 +99,10 @@ function showBill(){
   let total = 0;
   list.innerHTML = "";
 
-  bill.forEach((p, i)=>{
+  bill.forEach((p,i)=>{
     list.innerHTML += `
-      <li>
-        ${p.name} - ${p.price}
-        <button onclick="removeItem(${i})">❌</button>
-      </li>
+      <li>${p.name} - ${p.price}
+      <button onclick="removeItem(${i})">❌</button></li>
     `;
     total += p.price;
   });
@@ -119,11 +120,36 @@ function clearBill(){
   showBill();
 }
 
-function printBill(){
-  window.print();
+function saveBill(){
+  if(bill.length === 0){ alert("الفاتورة فاضية"); return; }
+
+  let total = bill.reduce((sum,p)=>sum+p.price,0);
+
+  bills.push({
+    date: new Date().toLocaleString(),
+    items: bill,
+    total: total
+  });
+
+  localStorage.setItem("bills", JSON.stringify(bills));
+  bill = [];
+  showBill();
+  showHistory();
+
+  alert("تم حفظ الفاتورة ✔");
+}
+
+function showHistory(){
+  let list = document.getElementById("history");
+  list.innerHTML = "";
+
+  bills.forEach(b=>{
+    list.innerHTML += `<li>${b.date} - ${b.total} جنيه</li>`;
+  });
 }
 
 showProducts();
+showHistory();
 
 </script>
 
